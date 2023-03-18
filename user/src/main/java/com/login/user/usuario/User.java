@@ -23,6 +23,7 @@ public class User {
     private String email;
     private String first_name;
     private String last_name;
+    private String password;
     private String phone_number;
     private LocalDate DOB;
     @Transient
@@ -33,11 +34,13 @@ public class User {
     public User(String username,
                 String email,
                 String first_name,
+                String password,
                 String last_name,
                 String phone_number,
                 LocalDate DOB) {
         this.username = username;
         this.email = email;
+        this.password = password;
         this.first_name = first_name;
         this.last_name = last_name;
         this.phone_number = phone_number;
@@ -102,6 +105,14 @@ public class User {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
