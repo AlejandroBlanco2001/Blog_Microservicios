@@ -1,6 +1,7 @@
 package com.login.user.auth;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.login.user.JWT;
 import com.login.user.usuario.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,8 @@ public class AuthContoller {
         public String username;
         public String password;
 
-        public LoginForm(){
+        public LoginForm(){}
 
-        }
         public LoginForm(String username, String password) {
             this.username = username;
             this.password = password;
@@ -38,19 +38,18 @@ public class AuthContoller {
         this.authService = authService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginForm loginForm){
+    @PostMapping("login")
+    public String login(@RequestBody LoginForm loginForm){
         String hashedPass = authService.getUsernameByUsername(loginForm.username).get().getPassword();
-        System.out.println(hashedPass);
         BCrypt.Result result = BCrypt.verifyer().verify(loginForm.password.toCharArray(), hashedPass);
-        return result.verified == true ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+        return result.verified ? JWT.getJWTToken(loginForm.username) : "Password or User is incorrect";
     }
 
-    @PostMapping("/register")
+    @PostMapping("register")
     public ResponseEntity register(@RequestBody User registerForm){
         registerForm.setPassword(BCrypt.withDefaults().hashToString(12, registerForm.getPassword().toCharArray()));
         System.out.println(registerForm.toString());
         boolean response = authService.createUser(registerForm);
-        return response == true ? ResponseEntity.ok().build() : ResponseEntity.internalServerError().build();
+        return response ? ResponseEntity.ok().build() : ResponseEntity.internalServerError().build();
     }
 }
